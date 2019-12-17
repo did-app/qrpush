@@ -1,0 +1,21 @@
+version: '2'
+
+volumes:
+  node_modules:
+services:
+  qr_push:
+    build:
+      context: "."
+      dockerfile: "Dockerfile"
+    ports:
+      - 8080:8080
+      - 8443:8443
+    volumes:
+      - .:/opt/app
+      - node_modules:/opt/app/lib/qr_push/www/node_modules
+      ## uncomment the below lines if you want to see the contents of the
+      ## container's deps/ and _build/ directories in your local project,
+      ## under container_mix
+      # - ./container_mix_artifacts:/opt/mix_artifacts
+  
+
