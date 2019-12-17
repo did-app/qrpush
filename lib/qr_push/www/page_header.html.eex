@@ -1,3 +1,0 @@
-<header>
-  <h1><%= title || "Raxx.Kit" %></h1>
-</header>
