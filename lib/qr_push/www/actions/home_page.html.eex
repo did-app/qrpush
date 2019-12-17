@@ -44,6 +44,7 @@
     <script>
       hljs.initHighlightingOnLoad();
     </script>
+    <script type="text/javascript" src="/main.js"></script>
     <style media="screen">
       html {
         box-sizing: border-box;
@@ -111,6 +112,25 @@
     <main>
       <h2>Get started now</h2>
       <h4>Recever, open mailbox</h4>
+      <script type="text/javascript">
+        (async function () {
+          const params = new URLSearchParams(window.location.search)
+          const address = params.get("qrpu.sh")
+          if (address) {
+            QrPush.send(address, {greeting: "Hello"})
+          } else {
+            console.log("Starting")
+            const mailbox = await QrPush.open({redirect: window.location.toString()})
+            console.log("Receiving", mailbox)
+            const message = await mailbox.receive()
+            console.log(message)
+          }
+          // const response = await fetch(mailbox.url, {
+          //   method: "GET"
+          // })
+          // console.log(response)
+        }());
+      </script>
       <pre><code class="javascript">
 // start a new channel
 const mailbox = await QrPush.open({redirect: "http://myapp.com/ping"})

@@ -7,8 +7,8 @@ defmodule QrPush.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.9.4",
       elixirc_paths: elixirc_paths(Mix.env()),
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases()
     ]
@@ -30,13 +30,13 @@ defmodule QrPush.Mixfile do
       {:raxx_view, "~> 0.1.7"},
       {:raxx_static, "~> 0.8.3"},
       {:raxx_session, "~> 0.2.0"},
-      {:exsync, "~> 0.2.3", only: :dev},
+      {:server_sent_event, "~> 1.0"},
+      {:exsync, "~> 0.2.3", only: :dev}
     ]
   end
 
   defp aliases() do
-    [
-    ]
+    []
   end
 
   # makes sure that if the project is run by docker-compose inside a container,
@@ -45,6 +45,7 @@ defmodule QrPush.Mixfile do
     case System.get_env("MIX_ARTIFACTS_DIRECTORY") do
       unset when unset in [nil, ""] ->
         []
+
       directory ->
         [
           build_path: Path.join(directory, "_build"),
