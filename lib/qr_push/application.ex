@@ -14,7 +14,7 @@ defmodule QrPush.Application do
 
     children = [
       {DynamicSupervisor, strategy: :one_for_one, name: QrPush.MailboxSupervisor},
-      QrPush.Counter,
+      QrPush.Sequence,
       {QrPush.WWW, [cleartext_options]},
       {QrPush.WWW, [secure_options]},
       Supervisor.child_spec(

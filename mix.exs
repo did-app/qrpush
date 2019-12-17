@@ -27,6 +27,7 @@ defmodule QrPush.Mixfile do
       {:ace, "~> 0.18.6"},
       {:raxx_logger, "~> 0.2.2"},
       {:jason, "~> 1.0"},
+      {:ok, "~> 2.3"},
       {:raxx_view, "~> 0.1.7"},
       {:raxx_static, "~> 0.8.3"},
       {:raxx_session, "~> 0.2.0"},

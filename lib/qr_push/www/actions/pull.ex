@@ -1,17 +1,17 @@
-defmodule QrPush.WWW.Actions.Receive do
+defmodule QrPush.WWW.Actions.Pull do
   use Raxx.Server
 
   @sse_mime_type ServerSentEvent.mime_type()
   def handle_head(request, state) do
-    IO.inspect(request)
-
     case Raxx.get_header(request, "last-event-id") do
       nil ->
         %{"redirect" => redirect} = Raxx.get_query(request)
-        {:ok, id} = QrPush.start_mailbox(redirect: redirect)
-        {:ok, ref} = QrPush.follow_mailbox(id, 0)
 
-        url = "#{request.scheme}://#{request.authority}/#{id}"
+        {:ok, %{pull_token: pull_token, push_token: push_token}} = QrPush.start_mailbox(redirect)
+
+        {:ok, ref} = QrPush.follow_mailbox(pull_token)
+
+        url = "#{request.scheme}://#{request.authority}/#{push_token}"
 
         response_head =
           response(:ok)
@@ -21,7 +21,7 @@ defmodule QrPush.WWW.Actions.Receive do
 
         event = %{type: "qrpu.sh/init", url: url}
         {:ok, data} = Jason.encode(event)
-        part = Raxx.data(ServerSentEvent.serialize(data, id: "#{id}"))
+        part = Raxx.data(ServerSentEvent.serialize(data, id: "#{pull_token}"))
         {[response_head, part], state}
     end
   end

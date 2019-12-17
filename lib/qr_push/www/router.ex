@@ -4,7 +4,7 @@ defmodule QrPush.WWW.Router do
 
   section([{Raxx.Logger, Raxx.Logger.setup(level: :info)}], [
     {%{path: []}, Actions.HomePage},
-    {%{path: ["receive"]}, Actions.Receive},
+    {%{path: ["pull"]}, Actions.Pull},
     {%{path: ["push", _token]}, Actions.Push},
     {%{path: [_token]}, Actions.Redirect}
   ])
