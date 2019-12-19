@@ -3,7 +3,10 @@
   "scripts": {
     "watch:js": "rollup -w -i assets/main.js -o public/main.js -f iife -n QrPush",
     "watch:css": "node-sass -w assets/main.scss public/main.css",
-    "prewatch:css": "node-sass assets/main.scss public/main.css"
+    "prewatch:css": "npm run build:css",
+    "build:css": "node-sass assets/main.scss public/main.css",
+    "build:js": "rollup -i assets/main.js -o public/main.js -f iife -n QrPush",
+    "build": "npm run build:js && npm run build:css"
   },
   "devDependencies": {
     "rollup": "^1.27.13",
