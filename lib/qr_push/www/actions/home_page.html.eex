@@ -127,9 +127,14 @@
             console.log("Starting")
             const channel = await QrPush.openChannel({redirect: window.location.toString()})
             channel.displayOverlay()
+            channel.displayOverlay()
+            setTimeout(async function () {
+              channel.close()
+              const channel2 = await QrPush.openChannel({redirect: window.location.toString()})
+              const message = await channel2.receive()
+              console.log(message)
+            }, 2000);
             console.log("Receiving", channel)
-            const message = await channel.receive()
-            console.log(message)
           }
         }());
       </script>

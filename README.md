@@ -1,4 +1,4 @@
-## QR Push
+# QR Push
 
 #### Deploy
 
@@ -15,9 +15,10 @@ git commit -am "something to say"
 git push heroku heroku:master
 ```
 
-- Heroku
+### Todo
 
-# TODO pings, 204
+- pings
+- 204
 
 Sending messages to QR codes.
 
