@@ -7,6 +7,12 @@ git checkout heroku
 rm lib/qr_push/www/public/main.*
 docker-compose run qr_push bash
 (cd lib/qr_push/www ; npm run build)
+
+## Exit
+
+git add .
+git commit -am "something to say"
+git push heroku heroku:master
 ```
 
 - Heroku
