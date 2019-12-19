@@ -1,6 +1,8 @@
 ## QR Push
 
-# TODO pings, 204, display QR code
+- Heroku
+
+# TODO pings, 204
 
 Sending messages to QR codes.
 
