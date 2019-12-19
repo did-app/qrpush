@@ -22,15 +22,25 @@ defmodule QrPush.Mailbox do
   end
 
   def handle_call({:redirect, push_secret}, _from, state) do
-    %__MODULE__{target: target} = state
-    {:reply, {:ok, target}, state}
+    %__MODULE__{push_check: push_check} = state
+
+    case secure_compare(mask(push_secret), push_check) do
+      true ->
+        %__MODULE__{target: target} = state
+        {:reply, {:ok, target}, state}
+    end
   end
 
-  def handle_call({:push, message}, _from, state) do
-    case state.follower do
-      {monitor, pid} ->
-        send(pid, message)
-        {:reply, :ok, state}
+  def handle_call({:push, push_secret, message}, _from, state) do
+    %__MODULE__{push_check: push_check} = state
+
+    case secure_compare(mask(push_secret), push_check) do
+      true ->
+        case state.follower do
+          {_monitor, pid} ->
+            send(pid, message)
+            {:reply, :ok, state}
+        end
     end
   end
 

@@ -50,7 +50,7 @@ defmodule QrPush do
     OK.for do
       {id, push_secret} <- decode_token(push_token)
       pid <- whereis_mailbox(id)
-      _ <- GenServer.call(pid, {:push, message})
+      _ <- GenServer.call(pid, {:push, push_secret, message})
     after
       :ok
     end

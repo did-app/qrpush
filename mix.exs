@@ -25,6 +25,8 @@ defmodule QrPush.Mixfile do
   defp deps do
     [
       {:ace, "~> 0.18.6"},
+      {:eqrcode, "~> 0.1.6"},
+      # {:qr_coder, "~> 0.1.2"},
       {:raxx_logger, "~> 0.2.2"},
       {:jason, "~> 1.0"},
       {:ok, "~> 2.3"},
