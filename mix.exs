@@ -30,9 +30,6 @@ defmodule QrPush.Mixfile do
       {:raxx_logger, "~> 0.2.2"},
       {:jason, "~> 1.0"},
       {:ok, "~> 2.3"},
-      {:raxx_view, "~> 0.1.7"},
-      {:raxx_static, "~> 0.8.3"},
-      {:raxx_session, "~> 0.2.0"},
       {:server_sent_event, "~> 1.0"},
       {:exsync, "~> 0.2.3", only: :dev}
     ]

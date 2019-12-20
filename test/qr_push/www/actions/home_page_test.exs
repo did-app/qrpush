@@ -8,8 +8,6 @@ defmodule QrPush.WWW.Actions.HomePageTest do
 
     response = HomePage.handle_request(request, QrPush.WWW.init())
 
-    assert response.status == 200
-    assert {"content-type", "text/html"} in response.headers
-    assert String.contains?(IO.iodata_to_binary(response.body), "Raxx.Kit")
+    assert response.status == 303
   end
 end

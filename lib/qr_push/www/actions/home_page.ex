@@ -1,10 +1,9 @@
 defmodule QrPush.WWW.Actions.HomePage do
   use Raxx.SimpleServer
-  use Raxx.View, arguments: []
 
   @impl Raxx.SimpleServer
   def handle_request(_request = %{method: :GET}, _state) do
-    response(:ok)
-    |> render()
+    # TODO https
+    redirect("http://www.qrpu.sh")
   end
 end
