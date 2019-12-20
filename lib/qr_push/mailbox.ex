@@ -39,7 +39,7 @@ defmodule QrPush.Mailbox do
         case state.follower do
           {_monitor, pid} ->
             send(pid, message)
-            {:reply, :ok, state}
+            {:reply, {:ok, :ok}, state}
         end
     end
   end
