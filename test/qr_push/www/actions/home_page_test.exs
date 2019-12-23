@@ -9,5 +9,6 @@ defmodule QrPush.WWW.Actions.HomePageTest do
     response = HomePage.handle_request(request, QrPush.WWW.init())
 
     assert response.status == 303
+    assert "http://localhost:5000" == Raxx.get_header(response, "location")
   end
 end

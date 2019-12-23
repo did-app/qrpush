@@ -16,15 +16,7 @@ defmodule QrPush.Application do
       {DynamicSupervisor, strategy: :one_for_one, name: QrPush.MailboxSupervisor},
       QrPush.Sequence,
       {QrPush.WWW, [cleartext_options]},
-      {QrPush.WWW, [secure_options]},
-      Supervisor.child_spec(
-        {Task, fn -> System.cmd("npm", ["run", "watch:js"], cd: "lib/qr_push/www") end},
-        id: :watch_js
-      ),
-      Supervisor.child_spec(
-        {Task, fn -> System.cmd("npm", ["run", "watch:css"], cd: "lib/qr_push/www") end},
-        id: :watch_css
-      )
+      {QrPush.WWW, [secure_options]}
     ]
 
     opts = [strategy: :one_for_one, name: QrPush.Supervisor]
