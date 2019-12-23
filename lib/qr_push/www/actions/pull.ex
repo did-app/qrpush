@@ -17,9 +17,9 @@ defmodule QrPush.WWW.Actions.Pull do
           %{redirect: redirect} <- fetch_params(request)
         after
           {:ok, %{pull_token: pull_token, push_token: push_token}} =
-            QrPush.start_mailbox(redirect)
+            QrPush.Transmission.start_mailbox(redirect)
 
-          {:ok, _ref} = QrPush.follow_mailbox(pull_token)
+          {:ok, _ref} = QrPush.Transmission.follow_mailbox(pull_token)
 
           Process.send_after(self(), :ping, 10_000)
 
@@ -52,7 +52,7 @@ defmodule QrPush.WWW.Actions.Pull do
 
       pull_token ->
         OK.try do
-          _ <- QrPush.follow_mailbox(pull_token)
+          _ <- QrPush.Transmission.follow_mailbox(pull_token)
         after
           Process.send_after(self(), :ping, 10_000)
         rescue

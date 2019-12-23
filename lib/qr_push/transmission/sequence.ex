@@ -1,4 +1,4 @@
-defmodule QrPush.Sequence do
+defmodule QrPush.Transmission.Sequence do
   use GenServer
 
   def start_link([]) do

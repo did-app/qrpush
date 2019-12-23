@@ -3,7 +3,7 @@ defmodule QrPush.WWW.Actions.Redirect do
 
   def handle_request(request = %{method: :GET}, _state) do
     [push_token] = request.path
-    {:ok, target} = QrPush.redirect(push_token)
+    {:ok, target} = QrPush.Transmission.redirect(push_token)
     extra_query = "qrpu.sh=#{request.scheme}://#{request.authority}/push/#{push_token}"
     uri = URI.parse(target)
 

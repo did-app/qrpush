@@ -1,11 +1,11 @@
-defmodule QrPush do
+defmodule QrPush.Transmission do
   require OK
 
   alias QrPush.Error
 
   def start_mailbox(redirect) do
     OK.for do
-      id <- QrPush.Sequence.assign_id()
+      id <- QrPush.Transmission.Sequence.assign_id()
       pull_secret = :crypto.strong_rand_bytes(16)
       push_secret = :crypto.strong_rand_bytes(6)
       # Need to keep sending pull token, might be easier encrypted
