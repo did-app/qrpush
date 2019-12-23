@@ -13,7 +13,7 @@ defmodule QrPush.Application do
     ]
 
     children = [
-      {DynamicSupervisor, strategy: :one_for_one, name: QrPush.MailboxSupervisor},
+      {DynamicSupervisor, strategy: :one_for_one, name: QrPush.Transmission.MailboxSupervisor},
       QrPush.Transmission.Sequence,
       {QrPush.WWW, [cleartext_options]},
       {QrPush.WWW, [secure_options]}

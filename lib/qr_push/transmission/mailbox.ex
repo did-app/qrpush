@@ -1,24 +1,64 @@
-defmodule QrPush.Mailbox do
+defmodule QrPush.Transmission.Mailbox do
   use GenServer
+  require OK
+
+  alias QrPush.Error
 
   # TODO after timout you should die
   @enforce_keys [:id, :target, :follower, :pull_check, :push_check]
   defstruct @enforce_keys
 
-  def start_link(id, target, pull_check, push_check) do
+  def setup(target) do
+    {:ok, id} = QrPush.Transmission.Sequence.assign_id()
+    pull_secret = :crypto.strong_rand_bytes(16)
+    push_secret = :crypto.strong_rand_bytes(6)
+    # Need to keep sending pull token, might be easier encrypted
+    pull_token = Base.encode32(<<id::32, pull_secret::binary>>)
+    push_token = Base.encode32(<<id::32, push_secret::binary>>)
+    tokens = %{pull_token: pull_token, push_token: push_token}
+
     state = %__MODULE__{
       id: id,
       target: target,
       follower: nil,
-      pull_check: pull_check,
-      push_check: push_check
+      pull_check: mask(pull_secret),
+      push_check: mask(push_secret)
     }
 
-    GenServer.start_link(__MODULE__, state, name: {:global, {__MODULE__, id}})
+    {state, tokens}
+  end
+
+  def start_link(target) do
+    {state, tokens} = setup(target)
+
+    case GenServer.start_link(__MODULE__, state, name: {:global, {__MODULE__, state.id}}) do
+      {:ok, pid} ->
+        {:ok, pid, tokens}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def init(state) do
     {:ok, state}
+  end
+
+  def handle_call({:follow, pid, pull_secret}, _from, state) do
+    %__MODULE__{pull_check: pull_check} = state
+
+    case secure_compare(mask(pull_secret), pull_check) do
+      true ->
+        monitor = Process.monitor(pid)
+        state = %__MODULE__{state | follower: {monitor, pid}}
+        # TODO if message send
+        {:reply, :ok, state}
+
+      false ->
+        {:reply,
+         {:error,
+          Error.operation_denied("Token was invalid for streaming messages from mailbox")}, state}
+    end
   end
 
   def handle_call({:redirect, push_secret}, _from, state) do
@@ -28,6 +68,9 @@ defmodule QrPush.Mailbox do
       true ->
         %__MODULE__{target: target} = state
         {:reply, {:ok, target}, state}
+
+      false ->
+        {:reply, {:error, Error.operation_denied("Token was invalid accessing mailbox")}, state}
     end
   end
 
@@ -41,21 +84,15 @@ defmodule QrPush.Mailbox do
             send(pid, message)
             {:reply, {:ok, :ok}, state}
         end
+
+      false ->
+        {:reply,
+         {:error, Error.operation_denied("Token was invalid for sending messages to mailbox")},
+         state}
     end
   end
 
-  # connection
-  def handle_call({:follow, pid, pull_secret}, _from, state) do
-    %__MODULE__{pull_check: pull_check} = state
-
-    case secure_compare(mask(pull_secret), pull_check) do
-      true ->
-        IO.inspect(pull_secret)
-        monitor = Process.monitor(pid)
-        state = %__MODULE__{state | follower: {monitor, pid}}
-        # TODO if message send
-        {:reply, :ok, state}
-    end
+  def handle_info do
   end
 
   defp mask(secret) do

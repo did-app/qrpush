@@ -37,6 +37,13 @@ defmodule QrPush.Error do
     data
   end
 
+  def operation_denied(detail, meta \\ %{}) do
+    status = 400
+    code = :operation_denied
+    title = "Authentication was invalid"
+    new(status, code, title, detail, meta)
+  end
+
   def invalid_request(detail, meta \\ %{}) do
     status = 400
     code = :invalid_request

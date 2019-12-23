@@ -85,6 +85,9 @@ defmodule QrPush.WWW.Actions.Pull do
     case Map.get(query, "redirect") do
       nil ->
         {:error, Error.invalid_request("'target query param is required to start mailbox'")}
+
+      redirect ->
+        {:ok, %{redirect: redirect}}
     end
   end
 end
