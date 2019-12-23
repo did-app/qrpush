@@ -9,9 +9,7 @@ defmodule QrPush.WWW.Actions.Pull do
       nil ->
         %{"redirect" => redirect} = Raxx.get_query(request)
 
-        {:ok, %{pull_token: pull_token, push_token: push_token}} =
-          QrPush.start_mailbox(redirect)
-          |> IO.inspect()
+        {:ok, %{pull_token: pull_token, push_token: push_token}} = QrPush.start_mailbox(redirect)
 
         # TODO handle down
         {:ok, _ref} = QrPush.follow_mailbox(pull_token)
