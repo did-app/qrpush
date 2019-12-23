@@ -1,6 +1,8 @@
 defmodule QrPush do
   require OK
 
+  alias QrPush.Error
+
   def start_mailbox(redirect) do
     OK.for do
       id <- QrPush.Sequence.assign_id()
@@ -26,7 +28,7 @@ defmodule QrPush do
 
   def follow_mailbox(pull_token) do
     OK.for do
-      <<id::32, pull_secret::binary>> <- Base.decode32(pull_token)
+      <<id::32, pull_secret::binary>> <- decode_token(pull_token)
       pid <- whereis_mailbox(id)
     after
       # Cursor is just zero, need to put cursor in token
@@ -76,7 +78,7 @@ defmodule QrPush do
         {:ok, {id, secret}}
 
       _ ->
-        {:error, :invalid_token}
+        {:error, Error.invalid_request("Invalid token")}
     end
   end
 end
