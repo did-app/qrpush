@@ -14,6 +14,8 @@ defmodule QrPush.WWW.Actions.Pull do
         # TODO handle down
         {:ok, _ref} = QrPush.follow_mailbox(pull_token)
 
+        Process.send_after(self(), :ping, 10_000)
+
         url = "#{request.scheme}://#{request.authority}/#{push_token}"
 
         svg =
@@ -34,6 +36,15 @@ defmodule QrPush.WWW.Actions.Pull do
         part = Raxx.data(ServerSentEvent.serialize(data, id: "#{pull_token}"))
         {[response_head, part], state}
     end
+  end
+
+  def handle_info(:ping, state) do
+    event = %ServerSentEvent{comments: ["ping"]}
+    serialized = ServerSentEvent.serialize(event)
+
+    Process.send_after(self(), :ping, 10_000)
+
+    {[Raxx.data(serialized)], state}
   end
 
   def handle_info(m, state) do
