@@ -1,0 +1,18 @@
+{application, qr_push,
+ [{description, "A Gleam program"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {qr_push@application, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    pgo,
+    midas,
+    gleam_stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, []},
+  {links, []}
+]}.
