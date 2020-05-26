@@ -1,9 +1,28 @@
-FROM gleamlang/midas:latest
+FROM rust:1.43.0 AS build
+
+ENV GLEAM_VERSION="v0.9.0-rc1"
+
+# RUN wget -c https://github.com/gleam-lang/gleam/releases/download/v0.8.0-rc1/gleam-v0.8.0-rc1-linux-amd64.tar.gz -O - | tar -xz -C /bin
+RUN set -xe \
+        && curl -fSL -o gleam-src.tar.gz "https://github.com/gleam-lang/gleam/archive/${GLEAM_VERSION}.tar.gz" \
+        && mkdir -p /usr/src/gleam-src \
+        && tar -xzf gleam-src.tar.gz -C /usr/src/gleam-src --strip-components=1 \
+        && rm gleam-src.tar.gz \
+        && cd /usr/src/gleam-src \
+        && make install \
+        && rm -rf /usr/src/gleam-src
+
+FROM erlang:22.3.2
+
+COPY --from=build /usr/local/cargo/bin/gleam /bin
+RUN gleam --version
 
 RUN apt-get update && apt-get install -y inotify-tools
+
+WORKDIR /opt/app
 
 COPY . .
 
 # Done so generated files are available to heroku run bash
-RUN rebar3 upgrade && rebar3 release
+# RUN rebar3 upgrade && rebar3 release
 CMD ["_build/default/rel/app/bin/app","foreground"]

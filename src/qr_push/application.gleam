@@ -7,7 +7,7 @@ import qr_push/transmission/mailbox_registry
 import qr_push/web/endpoint
 
 fn start_mailbox() {
-    todo
+  todo
 }
 
 fn init() {
