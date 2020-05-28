@@ -1,9 +1,11 @@
 import gleam/atom
+import gleam/io
 import process/supervisor/rest_for_one
 import process/supervisor/set_supervisor
 import qr_push/config
+import qr_push/counter
 // import qr_push/transmission/mailbox_supervisor
-import qr_push/transmission/mailbox_registry
+import registry/local as registry
 import qr_push/web/endpoint
 
 fn start_mailbox() {
@@ -12,11 +14,18 @@ fn start_mailbox() {
 
 fn init() {
   let Ok(config) = config.from_env()
+  let counter = counter.new()
+  io.println("Doing it......................................")
 
+  // counter here
+  // If supervisor dies, registry will empty.
+  // if registry dies supervisor needs to be killed
+  // supervisor last to keep webserver running,
   rest_for_one.Three(
-    fn() { set_supervisor.spawn_link(start_mailbox) },
-    fn(mailbox_supervisor) { mailbox_registry.spawn_link(mailbox_supervisor) },
-    fn(_, mailbox_registry) { endpoint.spawn_link(config) },
+    fn() { registry.spawn_link() },
+    // think I need supervisor for start link
+    fn(registry) { endpoint.spawn_link(counter, registry, config) },
+    fn(_, _) { set_supervisor.spawn_link(start_mailbox) },
   )
 }
 
