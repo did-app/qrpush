@@ -6,11 +6,8 @@ import qr_push/config
 import qr_push/counter
 // import qr_push/transmission/mailbox_supervisor
 import registry/local as registry
+import qr_push/mailbox
 import qr_push/web/endpoint
-
-fn start_mailbox() {
-  todo
-}
 
 fn init() {
   let Ok(config) = config.from_env()
@@ -23,9 +20,18 @@ fn init() {
   // supervisor last to keep webserver running,
   rest_for_one.Three(
     fn() { registry.spawn_link() },
+    fn(registry) {
+      set_supervisor.spawn_link(
+        fn(args) {
+          let tuple(target, pull_secret, push_secret) = args
+          mailbox.spawn_link(target, pull_secret, push_secret)
+        },
+      )
+    },
     // think I need supervisor for start link
-    fn(registry) { endpoint.spawn_link(counter, registry, config) },
-    fn(_, _) { set_supervisor.spawn_link(start_mailbox) },
+    fn(registry, supervisor) {
+      endpoint.spawn_link(counter, registry, supervisor, config)
+    },
   )
 }
 

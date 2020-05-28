@@ -26,24 +26,24 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
     // TODO monitor follower
     // TODO handle sending message if already pushed
     Some(Redirect(from, push_secret)) -> {
-        let True = push_check == push_secret
-        process.reply(from, target)
-        loop(receive, target, pull_check, push_check, follower, message)
+      let True = push_check == push_secret
+      process.reply(from, target)
+      loop(receive, target, pull_check, push_check, follower, message)
     }
     Some(Push(from, push_secret, message)) -> {
-        let True = push_check == push_secret
-        process.reply(from, Nil)
-        case follower {
-            Some(waiting) -> {
-                process.reply(waiting, message)
-                loop(receive, target, pull_check, push_check, follower, Some(message))
-            }
-            // TODO case follower not present
+      let True = push_check == push_secret
+      process.reply(from, Nil)
+      case follower {
+        Some(waiting) -> {
+          process.reply(waiting, message)
+          loop(receive, target, pull_check, push_check, follower, Some(message))
         }
+      }
     }
   }
 }
 
+// TODO case follower not present
 pub fn spawn_link(target, pull_check, push_check) {
   process.spawn_link(loop(_, target, pull_check, push_check, None, None))
 }
