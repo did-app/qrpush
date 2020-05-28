@@ -22,6 +22,18 @@ fn decode_token(token) {
     let secret = binary_part(decoded, tuple(4, byte_size(decoded) - 4))
     tuple(mailbox_id, secret)
 }
+//
+// @web_host (if(Mix.env() == :prod) do
+//              # TODO https
+//              "http://www.qrpu.sh"
+//            else
+//              "http://localhost:5000"
+//            end)
+//
+// @impl Raxx.SimpleServer
+// def handle_request(_request = %{method: :GET}, _state) do
+//   redirect(@web_host)
+// end
 
 pub fn handle_request(request, counter_ref, registry, _config) {
   case http.method(request), http.path_segments(request) {
@@ -41,6 +53,8 @@ pub fn handle_request(request, counter_ref, registry, _config) {
       ) = local.register(
         registry,
         mailbox_id,
+        // TODO mailbox needs to not be linked to this calling process.
+        // Set supervisor can take any start function as long as returns same pid
         fn() { mailbox.spawn_link(target, pull_secret, push_secret) },
       )
 
@@ -48,6 +62,7 @@ pub fn handle_request(request, counter_ref, registry, _config) {
           tuple("pull_token", pull_token),
           tuple("redirect_uri", string.append("http://qrpu.sh/", push_token)),
           // tuple("redirect_qr_code", "qrpu.sh/push_code"),
+          // TODO QR code
         ]
 
       http.response(200)
@@ -101,3 +116,29 @@ pub fn handle_request(request, counter_ref, registry, _config) {
       |> http.set_body("Not found")
   }
 }
+// defp mask(secret) do
+//   Base.encode32(:crypto.hash(:sha256, secret))
+// end
+//
+// @doc """
+// Compares the two binaries in constant-time to avoid timing attacks.
+// See: http://codahale.com/a-lesson-in-timing-attacks/
+// """
+//
+// def secure_compare(left, right) do
+//   if byte_size(left) == byte_size(right) do
+//     secure_compare(left, right, 0) == 0
+//   else
+//     false
+//   end
+// end
+//
+// import Bitwise, only: [|||: 2, ^^^: 2]
+//
+// defp secure_compare(<<x, left::binary>>, <<y, right::binary>>, acc) do
+//   secure_compare(left, right, acc ||| x ^^^ y)
+// end
+//
+// defp secure_compare(<<>>, <<>>, acc) do
+//   acc
+// end
