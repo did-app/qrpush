@@ -8,7 +8,9 @@
     stdlib,
     pgo,
     midas,
-    gleam_stdlib
+    gleam_stdlib,
+    crypto,
+    base32
    ]},
   {env,[]},
   {modules, []},
