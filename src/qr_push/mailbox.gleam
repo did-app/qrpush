@@ -11,7 +11,6 @@ pub type Message {
 fn loop(receive, target, pull_check, push_check, follower, message) {
   case receive(Infinity) {
     Some(Pull(from, pull_secret)) -> {
-      // TODO mask pull_check
       let True = pull_check == pull_secret
       case message {
         None -> loop(
@@ -24,6 +23,15 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
         )
       }
     }
+    // Mailbox test
+    // E2E test
+    // Deploy
+    // Front end
+    // Clean up registry notes
+    // Move TODO's to issues -> mask + secure compare secure compare as a proposal on
+    // Deploy
+    // make public
+    // suggestions of default release in template project
     // TODO monitor follower
     // TODO handle sending message if already pushed
     Some(Redirect(from, push_secret)) -> {

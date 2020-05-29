@@ -6,8 +6,8 @@ import gleam/http.{Request, Response, Get, Post, Options}
 import process/supervisor/set_supervisor
 import registry/local
 import qr_push/config.{Config}
-import qr_push/counter
 import qr_push/mailbox
+import qr_push/sequence
 
 external fn strong_rand_bytes(Int) -> Binary =
   "crypto" "strong_rand_bytes"
@@ -28,12 +28,12 @@ fn decode_token(token) {
   Ok(tuple(mailbox_id, secret))
 }
 
-pub fn handle_request(request, counter_ref, registry, supervisor, config) {
+pub fn handle_request(request, sequence_ref, registry, supervisor, config) {
   let Config(frontend_url: frontend_url, ..) = config
   case http.method(request), http.path_segments(request) {
     Get, [] -> http.redirect(frontend_url)
     Post, ["start"] -> {
-      let mailbox_id = counter.next(counter_ref)
+      let mailbox_id = sequence.next(sequence_ref)
       let Ok([tuple("target", target)]) = http.get_form(request)
       let pull_secret = strong_rand_bytes(16)
       let push_secret = strong_rand_bytes(6)

@@ -3,23 +3,19 @@ import gleam/io
 import process/supervisor/rest_for_one
 import process/supervisor/set_supervisor
 import qr_push/config
-import qr_push/counter
-// import qr_push/transmission/mailbox_supervisor
-import registry/local as registry
+import qr_push/sequence
+import registry/local
 import qr_push/mailbox
 import qr_push/web/endpoint
 
 fn init() {
   let Ok(config) = config.from_env()
-  let counter = counter.new()
-  io.println("Doing it......................................")
+  let sequence = sequence.new()
 
-  // counter here
   // If supervisor dies, registry will empty.
   // if registry dies supervisor needs to be killed
-  // supervisor last to keep webserver running,
   rest_for_one.Three(
-    fn() { registry.spawn_link() },
+    fn() { local.spawn_link() },
     fn(registry) {
       set_supervisor.spawn_link(
         fn(args) {
@@ -28,9 +24,8 @@ fn init() {
         },
       )
     },
-    // think I need supervisor for start link
     fn(registry, supervisor) {
-      endpoint.spawn_link(counter, registry, supervisor, config)
+      endpoint.spawn_link(sequence, registry, supervisor, config)
     },
   )
 }
