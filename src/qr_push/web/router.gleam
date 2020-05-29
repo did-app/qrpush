@@ -20,10 +20,11 @@ external fn base32_decode(String) -> Binary =
 fn decode_token(token) {
   let decoded = base32_decode(token)
 
-  let Ok(mailbox_id_u32) = binary.part(decoded, 0, 4)
-  let Ok(mailbox_id) = binary.int_from_u32(mailbox_id_u32)
-  let Ok(secret) = binary.part(decoded, 4, binary.byte_size(decoded) - 4)
-  tuple(mailbox_id, secret)
+  try mailbox_id_u32 = binary.part(decoded, 0, 4)
+  try mailbox_id = binary.int_from_u32(mailbox_id_u32)
+  try secret = binary.part(decoded, 4, binary.byte_size(decoded) - 4)
+
+  Ok(tuple(mailbox_id, secret))
 }
 
 //
@@ -75,7 +76,7 @@ pub fn handle_request(request, counter_ref, registry, supervisor, _config) {
       let Some(authorization) = http.get_header(request, "authorization")
       let True = string.starts_with(authorization, "Bearer ")
       let pull_token = string.slice(authorization, 7, 100)
-      let tuple(mailbox_id, pull_secret) = decode_token(pull_token)
+      let Ok(tuple(mailbox_id, pull_secret)) = decode_token(pull_token)
       let Ok(Some(pid)) = local.lookup(registry, mailbox_id)
       let Ok(message) = mailbox.pull(pid, pull_secret, 60000)
       http.response(200)
@@ -86,7 +87,7 @@ pub fn handle_request(request, counter_ref, registry, supervisor, _config) {
       let Some(authorization) = http.get_header(request, "authorization")
       let True = string.starts_with(authorization, "Bearer ")
       let push_token = string.slice(authorization, 7, 100)
-      let tuple(mailbox_id, push_secret) = decode_token(push_token)
+      let Ok(tuple(mailbox_id, push_secret)) = decode_token(push_token)
       let Ok(Some(pid)) = local.lookup(registry, mailbox_id)
       let message = http.get_body(request)
       let Ok(Nil) = mailbox.push(pid, push_secret, message, 1000)
@@ -96,7 +97,7 @@ pub fn handle_request(request, counter_ref, registry, supervisor, _config) {
       |> http.set_body("")
     }
     Get, [push_token] -> {
-      let tuple(mailbox_id, push_secret) = decode_token(push_token)
+      let Ok(tuple(mailbox_id, push_secret)) = decode_token(push_token)
       let Ok(Some(pid)) = local.lookup(registry, mailbox_id)
       let Ok(target) = mailbox.redirect(pid, push_secret, 60000)
       // target + ?qrpu.sh=token
