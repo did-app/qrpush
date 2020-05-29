@@ -1,4 +1,5 @@
 pub external type SequenceRef
+
 pub external type Ok
 
 external fn do_new(Int, List(Nil)) -> SequenceRef =

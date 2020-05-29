@@ -23,8 +23,6 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
         )
       }
     }
-    // Mailbox test
-    // E2E test
     // Deploy
     // Front end
     // Clean up registry notes
@@ -32,8 +30,9 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
     // Deploy
     // make public
     // suggestions of default release in template project
-    // TODO monitor follower
-    // TODO handle sending message if already pushed
+    // gleam_http
+    // gleam_crypto for secure_compare mask_compare etc, copy https://github.com/elixir-plug/plug_crypto/blob/master/lib/plug/crypto.ex
+    // base32 lib
     Some(Redirect(from, push_secret)) -> {
       let True = push_check == push_secret
       process.reply(from, target)
@@ -52,7 +51,6 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
   }
 }
 
-// TODO case follower not present
 pub fn spawn_link(target, pull_check, push_check) {
   process.spawn_link(loop(_, target, pull_check, push_check, None, None))
 }

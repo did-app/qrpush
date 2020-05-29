@@ -1,11 +1,10 @@
 import gleam/atom
 import gleam/io
 import process/supervisor/rest_for_one
-import process/supervisor/set_supervisor
 import qr_push/config
 import qr_push/sequence
 import registry/local
-import qr_push/mailbox
+import qr_push/mailbox_supervisor
 import qr_push/web/endpoint
 
 fn init() {
@@ -16,14 +15,7 @@ fn init() {
   // if registry dies supervisor needs to be killed
   rest_for_one.Three(
     fn() { local.spawn_link() },
-    fn(registry) {
-      set_supervisor.spawn_link(
-        fn(args) {
-          let tuple(target, pull_secret, push_secret) = args
-          mailbox.spawn_link(target, pull_secret, push_secret)
-        },
-      )
-    },
+    fn(_registry) { mailbox_supervisor.spawn_link() },
     fn(registry, supervisor) {
       endpoint.spawn_link(sequence, registry, supervisor, config)
     },

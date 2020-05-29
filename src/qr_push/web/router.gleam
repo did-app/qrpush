@@ -87,7 +87,8 @@ pub fn handle_request(request, sequence_ref, registry, supervisor, config) {
       let Ok(target) = mailbox.redirect(pid, push_secret, 60000)
       // target + ?qrpu.sh=token
       // send whole url to make localdev easy.
-      http.redirect("Todo")
+      // Don't add whole URL because we send token in header anywayt
+      http.redirect(string.join([target, "?qrpu.sh=", push_token], ""))
     }
     Options, _ -> http.response(204)
       |> http.set_header("access-control-allow-origin", "*")
