@@ -1,3 +1,4 @@
+import gleam/binary.{Binary}
 import gleam/io
 import gleam/option.{Some}
 import gleam/string
@@ -7,32 +8,21 @@ import registry/local
 import qr_push/counter
 import qr_push/mailbox
 
-external fn strong_rand_bytes(Int) -> String =
+external fn strong_rand_bytes(Int) -> Binary =
   "crypto" "strong_rand_bytes"
 
-external fn base32_encode(String) -> String =
+external fn base32_encode(Binary) -> String =
   "base32" "encode"
 
-external fn base32_decode(String) -> String =
+external fn base32_decode(String) -> Binary =
   "base32" "decode"
-
-external fn int_to_32bits(Int) -> String =
-  "qr_push_native" "int_to_32bits"
-
-external fn int_from_32bits(String) -> Int =
-  "qr_push_native" "int_from_32bits"
-
-external fn binary_part(String, tuple(Int, Int)) -> String =
-  "binary" "part"
-
-external fn byte_size(String) -> Int =
-  "erlang" "byte_size"
 
 fn decode_token(token) {
   let decoded = base32_decode(token)
-  io.debug(decoded)
-  let mailbox_id = int_from_32bits(binary_part(decoded, tuple(0, 4)))
-  let secret = binary_part(decoded, tuple(4, byte_size(decoded) - 4))
+
+  let Ok(mailbox_id_u32) = binary.part(decoded, 0, 4)
+  let Ok(mailbox_id) = binary.int_from_u32(mailbox_id_u32)
+  let Ok(secret) = binary.part(decoded, 4, binary.byte_size(decoded) - 4)
   tuple(mailbox_id, secret)
 }
 
@@ -57,11 +47,12 @@ pub fn handle_request(request, counter_ref, registry, supervisor, _config) {
       let Ok([tuple("target", target)]) = http.get_form(request)
       let pull_secret = strong_rand_bytes(16)
       let push_secret = strong_rand_bytes(6)
+      let Ok(mailbox_id_u32) = binary.int_to_u32(mailbox_id)
       let pull_token = base32_encode(
-        string.append(int_to_32bits(mailbox_id), pull_secret),
+        binary.append(mailbox_id_u32, pull_secret),
       )
       let push_token = base32_encode(
-        string.append(int_to_32bits(mailbox_id), push_secret),
+        binary.append(mailbox_id_u32, push_secret),
       )
       let Ok(
         pid,

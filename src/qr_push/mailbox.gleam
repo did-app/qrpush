@@ -1,10 +1,11 @@
+import gleam/binary.{Binary}
 import gleam/option.{Some, None}
 import process/process.{From, Milliseconds, Infinity}
 
 pub type Message {
-  Pull(from: From(String), pull_secret: String)
-  Redirect(from: From(String), push_secret: String)
-  Push(from: From(Nil), push_secret: String, message: String)
+  Pull(from: From(String), pull_secret: Binary)
+  Redirect(from: From(String), push_secret: Binary)
+  Push(from: From(Nil), push_secret: Binary, message: String)
 }
 
 fn loop(receive, target, pull_check, push_check, follower, message) {
