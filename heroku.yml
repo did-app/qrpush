@@ -1,3 +1,5 @@
 build:
   docker:
     web: Dockerfile
+run:
+  web: _build/default/rel/app/bin/app foreground
