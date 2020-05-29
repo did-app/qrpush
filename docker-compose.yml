@@ -10,4 +10,5 @@ services:
     network_mode: host
     environment:
       - PORT=8080
+      - FRONTEND_URL=http://localhost:5000
     command: "./watch.sh"

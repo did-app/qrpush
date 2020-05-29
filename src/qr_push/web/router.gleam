@@ -5,6 +5,7 @@ import gleam/string
 import gleam/http.{Request, Response, Get, Post, Options}
 import process/supervisor/set_supervisor
 import registry/local
+import qr_push/config.{Config}
 import qr_push/counter
 import qr_push/mailbox
 
@@ -27,34 +28,18 @@ fn decode_token(token) {
   Ok(tuple(mailbox_id, secret))
 }
 
-//
-// @web_host (if(Mix.env() == :prod) do
-//              # TODO https
-//              "http://www.qrpu.sh"
-//            else
-//              "http://localhost:5000"
-//            end)
-//
-// @impl Raxx.SimpleServer
-// def handle_request(_request = %{method: :GET}, _state) do
-//   redirect(@web_host)
-// end
-pub fn handle_request(request, counter_ref, registry, supervisor, _config) {
+pub fn handle_request(request, counter_ref, registry, supervisor, config) {
+  let Config(frontend_url: frontend_url, ..) = config
   case http.method(request), http.path_segments(request) {
-    Get, [] -> http.response(200)
-      |> http.set_body("API for qrpu.sh")
+    Get, [] -> http.redirect(frontend_url)
     Post, ["start"] -> {
       let mailbox_id = counter.next(counter_ref)
       let Ok([tuple("target", target)]) = http.get_form(request)
       let pull_secret = strong_rand_bytes(16)
       let push_secret = strong_rand_bytes(6)
       let Ok(mailbox_id_u32) = binary.int_to_u32(mailbox_id)
-      let pull_token = base32_encode(
-        binary.append(mailbox_id_u32, pull_secret),
-      )
-      let push_token = base32_encode(
-        binary.append(mailbox_id_u32, push_secret),
-      )
+      let pull_token = base32_encode(binary.append(mailbox_id_u32, pull_secret))
+      let push_token = base32_encode(binary.append(mailbox_id_u32, push_secret))
       let Ok(
         pid,
       ) = set_supervisor.start_child(
