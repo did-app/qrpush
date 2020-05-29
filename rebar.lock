@@ -3,7 +3,7 @@
  {<<"base32">>,{pkg,<<"base32">>,<<"0.1.0">>},0},
  {<<"gleam_stdlib">>,
   {git,"git://github.com/midas-framework/stdlib.git",
-       {ref,"7b5214b3d269cde6757384b22486788e290ad397"}},
+       {ref,"c80096453f0a265d26e05a9f39ddee364e8b4e05"}},
   0},
  {<<"midas">>,
   {git,"git://github.com/midas-framework/midas.git",

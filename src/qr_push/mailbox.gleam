@@ -23,16 +23,10 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
         )
       }
     }
-    // Deploy
     // Front end
     // Clean up registry notes
-    // Move TODO's to issues -> mask + secure compare secure compare as a proposal on
-    // Deploy
     // make public
     // suggestions of default release in template project
-    // gleam_http
-    // gleam_crypto for secure_compare mask_compare etc, copy https://github.com/elixir-plug/plug_crypto/blob/master/lib/plug/crypto.ex
-    // base32 lib
     Some(Redirect(from, push_secret)) -> {
       let True = push_check == push_secret
       process.reply(from, target)
