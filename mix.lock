@@ -1,0 +1,6 @@
+%{
+  "base32": {:hex, :base32, "0.1.0", "044f6dc95709727ca2176f3e97a41ddaa76b5bc690d3536908618c0cb32616a2", [:rebar3], [], "hexpm", "10a73951d857d8cb1eceea8eb96c6941f6a76e105947ad09c2b73977dee07638"},
+  "gleam_stdlib": {:git, "https://github.com/gleam-lang/stdlib.git", "f88c132f3407f85a4580968d149c0f53a50d06b6", []},
+  "midas": {:git, "https://github.com/midas-framework/midas.git", "6f78ca642d29f912e3eac78c192e2c36c0d8b635", []},
+  "mix_gleam": {:hex, :mix_gleam, "0.1.0", "a0cee5d30de865124a32ca6cd53b64c3e2ac57f12adf6e47b88fb673f47c716e", [:mix], [], "hexpm", "9ff518e6aab444c7f2e74038f9383020ef89810cf1f4402911f33b202ffd72e7"},
+}

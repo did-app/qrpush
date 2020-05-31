@@ -9,6 +9,7 @@ import qr_push/web/endpoint
 
 fn init() {
   let Ok(config) = config.from_env()
+  io.println("Helooooooooooooooooooooooo")
   let sequence = sequence.new()
 
   // If supervisor dies, registry will empty.

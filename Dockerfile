@@ -1,11 +1,9 @@
-FROM gleamlang/gleam:0.9.0-rc1
+FROM gleamlang/gleam:0.9.0-rc1 as build
 
-RUN apt-get update && apt-get install -y inotify-tools
+FROM elixir:1.10.3
 
+COPY --from=build /bin/gleam /bin
+RUN gleam --version
+
+# NOTE the WORKDIR should not be the users home dir as the will copy container cookie into host machine
 WORKDIR /opt/app
-
-COPY . .
-
-# Done so generated files are available to heroku run bash
-RUN rebar3 upgrade && rebar3 release
-CMD ["_build/default/rel/app/bin/app","foreground"]
