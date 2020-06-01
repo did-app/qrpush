@@ -34,6 +34,7 @@ defmodule QrPush.Mixfile do
       # {:gleam_stdlib, "~> 0.9.0"}
       {:gleam_stdlib, github: "gleam-lang/stdlib", manager: :rebar3, override: true},
       {:base32, "~> 0.1.0"},
+      {:eqrcode, "~> 0.1.6"},
       {:midas, github: "midas-framework/midas", manager: :rebar3}
     ]
   end

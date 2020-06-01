@@ -18,6 +18,8 @@ external fn base32_encode(Binary) -> String =
 external fn base32_decode(String) -> Binary =
   "base32" "decode"
 
+ external fn generate_qr(String) -> String = "Elixir.QrPush" "generate"
+
 fn decode_token(token) {
   let decoded = base32_decode(token)
 
@@ -47,11 +49,14 @@ pub fn handle_request(request, sequence_ref, registry, supervisor, config) {
         tuple(target, pull_secret, push_secret),
       )
       let Ok(_pid) = local.register(registry, mailbox_id, fn() { pid })
+      let redirect_uri = string.join([api_url, "/", push_token], "")
+      let redirect_qr = generate_qr(redirect_uri)
       let data = [
           tuple("pull_token", pull_token),
-          tuple("redirect_uri", string.join([api_url, "/", push_token], "")),
+          tuple("redirect_uri", redirect_uri),
+          tuple("redirect_qr", redirect_qr),
         ]
-      // TODO QR code
+
       http.response(200)
       |> http.set_header("access-control-allow-origin", "*")
       |> http.set_form(data)
