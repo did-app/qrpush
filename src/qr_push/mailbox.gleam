@@ -23,7 +23,6 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
         )
       }
     }
-    // how easy is it to use elixir buildpack on heroku
     // Front end
     // Clean up registry notes
     // make public

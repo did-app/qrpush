@@ -8,8 +8,8 @@ services:
     build:
       context: "."
       dockerfile: "Dockerfile"
-    # volumes:
-    #   - .:/opt/app
+    volumes:
+      - .:/opt/app
       # - underscore_build:/opt/app/_build
       # - deps:/opt/app/deps
     network_mode: host
