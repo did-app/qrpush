@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
+mix local.hex --force && mix local.rebar --force
 mix deps.get --force
 
 elixir --sname app -S mix run --no-halt

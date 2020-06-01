@@ -50,11 +50,6 @@ pub fn spawn_link() {
   process.spawn_link(loop(_, map.new(), map.new()))
 }
 
-// returns Result(Option), None is because Key already registered, normal operation.
-// error is for failure to contact registry, dead pid, or in larger systems no consensus.
-// new_or_create works for returning existing value
-// Return a Registered(pid), Existing(pid)
-// Is it just OK(pid) | error Pid
 pub fn register(registry, key, create) {
   process.call(registry, Register(_, key, create), Infinity)
 }
@@ -62,12 +57,3 @@ pub fn register(registry, key, create) {
 pub fn lookup(registry, key) {
   process.call(registry, Lookup(_, key), Infinity)
 }
-// register_new
-// register_replace (if pid what you do)
-// update === register_replace(option)
-// pub fn register(registry: Registry(a, b), key: a, create: fn(Option(b)) -> Option(b)) -> Result(b, Nil) {
-// Option is an already started value response
-// Ok(Ok(b) Exists)
-// pub fn lookup()
-// update(key, modify)
-// Can have a call function that sends a Down message from registry if needed
