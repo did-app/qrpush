@@ -1,5 +1,8 @@
 version: "3"
 
+volumes:
+  underscore_build:
+  deps:
 services:
   app:
     build:
@@ -7,8 +10,9 @@ services:
       dockerfile: "Dockerfile"
     volumes:
       - .:/opt/app
+      # - underscore_build:/opt/app/_build
+      # - deps:/opt/app/deps
     network_mode: host
     environment:
       - PORT=8080
       - FRONTEND_URL=http://localhost:5000
-    command: "./watch.sh"

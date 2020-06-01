@@ -24,9 +24,7 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
       }
     }
     // Front end
-    // Clean up registry notes
     // make public
-    // suggestions of default release in template project
     Some(Redirect(from, push_secret)) -> {
       let True = push_check == push_secret
       process.reply(from, target)
