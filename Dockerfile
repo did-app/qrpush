@@ -12,6 +12,9 @@ WORKDIR /opt/app
 
 # TODO mount volumes including gen
 COPY . .
-RUN mix do deps.get, compile
+RUN mix deps.get
+# RUN mix compile mix_gleam
+RUN mix compile
+RUN mix test
 
 CMD ["./bin/start"]

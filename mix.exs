@@ -8,6 +8,12 @@ defmodule QrPush.Mixfile do
       elixir: "~> 1.10",
       erlc_paths: ["src", "gen"],
       compilers: [:gleam | Mix.compilers()],
+      # aliases: [
+      #   "compile.gleam": fn _ ->
+      #     System.cmd("gleam", ["build"])
+      #     :ok
+      #   end
+      # ],
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
