@@ -11,5 +11,7 @@ RUN mix local.hex --force && mix local.rebar --force
 WORKDIR /opt/app
 
 # TODO mount volumes including gen
+COPY . .
+RUN mix do deps.get, compile
 
 CMD ["./bin/start"]
