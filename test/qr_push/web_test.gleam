@@ -50,7 +50,6 @@ pub fn send_message_to_follower_test() {
     supervisor,
     config,
   )
-  io.debug(response)
   should.equal(response.head.status, 303)
   let Some(target) = http.get_header(response, "location")
   should.equal(
@@ -95,6 +94,68 @@ pub fn send_message_to_follower_test() {
 
   // NOTE can't specify types on let and have it work out the dot accessors
   let Some(response) = unsafe_receive(Infinity)
+  should.equal(200, response.head.status)
+  should.equal("Any content here", http.get_body(response))
+}
+
+pub fn follower_fetch_message_test() {
+  let tuple(sequence_ref, registry, supervisor, config) = setup()
+  let request = http.request(http.Post, "http://www.qrpush.test/start")
+    |> http.set_body("target=http://other.test/sender.html")
+
+  let response = router.handle_request(
+    request,
+    sequence_ref,
+    registry,
+    supervisor,
+    config,
+  )
+  should.equal(response.head.status, 200)
+  let Ok(form_data) = http.get_form(response)
+  let Ok(pull_token) = list.key_find(form_data, "pull_token")
+  let Ok(redirect_uri) = list.key_find(form_data, "redirect_uri")
+  let request = http.request(http.Get, redirect_uri)
+    |> http.set_body("")
+
+  let response = router.handle_request(
+    request,
+    sequence_ref,
+    registry,
+    supervisor,
+    config,
+  )
+  should.equal(response.head.status, 303)
+  let Some(target) = http.get_header(response, "location")
+  should.equal(
+    True,
+    string.starts_with(target, "http://other.test/sender.html?"),
+  )
+  let Ok(Uri(query: Some(query), ..)) = uri.parse(target)
+  let Ok([tuple("qrpu.sh", push_token)]) = uri.parse_query(query)
+
+  let request = http.request(http.Post, "http://www.qrpush.test/push")
+    |> http.set_header("authorization", string.append("Bearer ", push_token))
+    |> http.set_body("Any content here")
+  let response = router.handle_request(
+    request,
+    sequence_ref,
+    registry,
+    supervisor,
+    config,
+  )
+  should.equal(response.head.status, 200)
+
+  // NOTE can't specify types on let and have it work out the dot accessors
+  let request = http.request(http.Get, "http://www.qrpush.test/pull")
+    |> http.set_header("authorization", string.append("Bearer ", pull_token))
+    |> http.set_body("")
+  let response = router.handle_request(
+    request,
+    sequence_ref,
+    registry,
+    supervisor,
+    config,
+  )
   should.equal(200, response.head.status)
   should.equal("Any content here", http.get_body(response))
 }

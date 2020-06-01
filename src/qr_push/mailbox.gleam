@@ -1,5 +1,5 @@
 import gleam/binary.{Binary}
-import gleam/option.{Some, None}
+import gleam/option.{Option, Some, None}
 import process/process.{From, Milliseconds, Infinity}
 
 pub type Message {
@@ -21,6 +21,7 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
           Some(from),
           message,
         )
+        Some(message) -> process.reply(from, message)
       }
     }
     // Front end
@@ -38,6 +39,14 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
           process.reply(waiting, message)
           loop(receive, target, pull_check, push_check, follower, Some(message))
         }
+        None -> loop(
+          receive,
+          target,
+          pull_check,
+          push_check,
+          follower,
+          Some(message),
+        )
       }
     }
   }
