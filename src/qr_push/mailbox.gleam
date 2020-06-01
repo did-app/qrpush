@@ -24,8 +24,6 @@ fn loop(receive, target, pull_check, push_check, follower, message) {
         Some(message) -> process.reply(from, message)
       }
     }
-    // Front end
-    // make public
     Some(Redirect(from, push_secret)) -> {
       let True = push_check == push_secret
       process.reply(from, target)
