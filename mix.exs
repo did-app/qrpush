@@ -5,52 +5,37 @@ defmodule QrPush.Mixfile do
     [
       app: :qr_push,
       version: "0.1.0",
-      elixir: "~> 1.9.4",
-      elixirc_paths: elixirc_paths(Mix.env()),
-      build_embedded: Mix.env() == :prod,
+      elixir: "~> 1.10",
+      erlc_paths: ["src", "gen"],
+      compilers: [:gleam | Mix.compilers()],
+      # aliases: [
+      #   "compile.gleam": fn _ ->
+      #     System.cmd("gleam", ["build"])
+      #     :ok
+      #   end
+      # ],
       start_permanent: Mix.env() == :prod,
-      deps: deps(),
-      aliases: aliases()
+      deps: deps()
     ]
-    |> Keyword.merge(custom_artifacts_directory_opts())
   end
 
+  # Run "mix help compile.app" to learn about applications.
   def application do
-    [extra_applications: [:logger], mod: {QrPush.Application, []}]
+    [
+      extra_applications: [:logger],
+      mod: {:qr_push@application, []}
+    ]
   end
 
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib"]
-
+  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ace, "~> 0.18.6"},
+      {:mix_gleam, "~> 0.1.0"},
+      # {:gleam_stdlib, "~> 0.9.0"}
+      {:gleam_stdlib, github: "gleam-lang/stdlib", manager: :rebar3, override: true},
+      {:base32, "~> 0.1.0"},
       {:eqrcode, "~> 0.1.6"},
-      # {:qr_coder, "~> 0.1.2"},
-      {:raxx_logger, "~> 0.2.2"},
-      {:jason, "~> 1.0"},
-      {:ok, "~> 2.3"},
-      {:server_sent_event, "~> 1.0"},
-      {:exsync, "~> 0.2.3", only: :dev}
+      {:midas, github: "midas-framework/midas", manager: :rebar3}
     ]
-  end
-
-  defp aliases() do
-    []
-  end
-
-  # makes sure that if the project is run by docker-compose inside a container,
-  # its artifacts won't pollute the host's project directory
-  defp custom_artifacts_directory_opts() do
-    case System.get_env("MIX_ARTIFACTS_DIRECTORY") do
-      unset when unset in [nil, ""] ->
-        []
-
-      directory ->
-        [
-          build_path: Path.join(directory, "_build"),
-          deps_path: Path.join(directory, "deps")
-        ]
-    end
   end
 end
