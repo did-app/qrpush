@@ -1,5 +1,5 @@
 build:
   docker:
     web: Dockerfile
-run:
-  web: mix run --no-halt
+# run:
+#   web: mix run --no-halt
