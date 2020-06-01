@@ -17,7 +17,7 @@ fn setup() {
   let sequence_ref = sequence.new()
   let registry = local.spawn_link()
   let supervisor = mailbox_supervisor.spawn_link()
-  let config = Config(port: 0, frontend_url: "www.qrpush.test")
+  let config = Config(port: 0, frontend_url: "https://www.qrpush.test", api_url: "https://qrpush.test")
   tuple(sequence_ref, registry, supervisor, config)
 }
 

@@ -29,7 +29,7 @@ fn decode_token(token) {
 }
 
 pub fn handle_request(request, sequence_ref, registry, supervisor, config) {
-  let Config(frontend_url: frontend_url, ..) = config
+  let Config(frontend_url: frontend_url, api_url: api_url ..) = config
   case http.method(request), http.path_segments(request) {
     Get, [] -> http.redirect(frontend_url)
     Post, ["start"] -> {
@@ -49,9 +49,8 @@ pub fn handle_request(request, sequence_ref, registry, supervisor, config) {
       let Ok(_pid) = local.register(registry, mailbox_id, fn() { pid })
       let data = [
           tuple("pull_token", pull_token),
-          tuple("redirect_uri", string.append("http://qrpu.sh/", push_token)),
+          tuple("redirect_uri", string.join([api_url, "/", push_token], "")),
         ]
-      // tuple("redirect_qr_code", "qrpu.sh/push_code"),
       // TODO QR code
       http.response(200)
       |> http.set_header("access-control-allow-origin", "*")
@@ -85,7 +84,6 @@ pub fn handle_request(request, sequence_ref, registry, supervisor, config) {
       let Ok(tuple(mailbox_id, push_secret)) = decode_token(push_token)
       let Ok(Some(pid)) = local.lookup(registry, mailbox_id)
       let Ok(target) = mailbox.redirect(pid, push_secret, 60000)
-      // target + ?qrpu.sh=token
       // send whole url to make localdev easy.
       // Don't add whole URL because we send token in header anywayt
       http.redirect(string.join([target, "?qrpu.sh=", push_token], ""))
