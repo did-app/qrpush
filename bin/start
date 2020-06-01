@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 set -eu
 
-mix deps.get
+mix deps.get --force
 
 elixir --sname app -S mix run --no-halt
